@@ -4,10 +4,11 @@ import cartRouter from "./routers/cart.router.js"
 import multer from "multer";
 import handlebars from "express-handlebars"
 import { Server } from "socket.io"
+import mongoose from "mongoose";
 
 const app = express()
 
-//Configuración del contro de plantillas
+// Configuración del control de plantillas
 app.engine("handlebars", handlebars.engine())
 app.set("views", "./src/views")
 app.set("view engine", "handlebars")
@@ -33,7 +34,7 @@ const middleware = (req, res, next) => {
     next()
 }
 
-app.use("/api/products", middleware, productRouter)
+app.use("/api/products", productRouter)
 app.use("api/cart", cartRouter)
 
 //http://localhost:8080/
@@ -45,7 +46,7 @@ app.post("/", uploader.single("file"), (req, res) => {
     res.json({ status: "success", message: "File uploaded"})
 })
 
-//Configuración socket
+// Configuración socket
 const serverHttp = app.listen(8080, () => console.log("Server up..."))
 const io = new Server(serverHttp)
 
@@ -60,7 +61,6 @@ io.on(`connection`, socket => {
         io.emit("history", log)
     })
 })
-
 
 
 /*

@@ -1,34 +1,8 @@
 [
-	{
-		"title": "Harry Potter",
-		"description": "Película género fantástico",
-		"price": "12500",
-		"code": "4522",
-		"stock": "2",
-		"img": "img.jpg"
-	},
-	{
-		"title": "Indiana Jones",
-		"description": "Película aventura",
-		"price": "9500",
-		"code": "4523",
-		"stock": "7",
-		"img": "img2.jpg"
-	},
-	{
-		"title": "Sherlock Holmes",
-		"description": "Película detectives",
-		"price": "8000",
-		"code": "4524",
-		"stock": "14",
-		"img": "img3.jpg"
-	},
-	{
-		"title": "The Witcher",
-		"description": "Película género fantástico",
-		"price": "5000",
-		"code": "4525",
-		"stock": "4",
-		"img": "img4.jpg"
-	}
+  {
+    "name": "Benja",
+    "age": 36,
+    "code": "COD005",
+    "id": "QlAi_-OWsujyZcxAyD045"
+  }
 ]

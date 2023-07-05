@@ -3,11 +3,12 @@ import ProductManager from "../components/ProductManager.js"
 
 const router = Router()
 const product = new ProductManager()
-const readProducts = await product.getProducts()
+const readProducts = await product.readProducts()
 
 //endpoint para leer todos los productos
-router.get("/", (req, res) => {
-    res.render("showProducts", {readProducts})
+router.get("/", async (req, res) => {
+    // res.render("showProducts", {readProducts})
+    res.json(await product.getProducts())
 })
 
 //Método GET Query params
@@ -17,24 +18,22 @@ router.get("/", async(req, res) => {
         res.send(readProducts)
     } else {
         let amount = await readProducts.slice(0, limit)
-        res.send(amount)
+        res.json(amount)
     }
 })
 
 //Método GET URL params
 router.get("/:pid", async(req, res) => {
     let id = req.params.pid
-    let product = readProducts.find(item => item.id == id)
-    if(!product) return res.status(400).json("ID does not exist")
-    res.render("showProduct", product)
+    let productById = await product.getProductsById(id)
+    res.json(productById)
 })
 
 //Método POST
 router.post ("/", async(req, res) => {
-    let {title, description, price, code, stock, img} = req.body
-    const userCreated = {title, description, price, code, stock, img}
-    await product.writeProducts(userCreated)
-    res.status(201).json({ message: "User created" })
+    let newProduct = req.body
+    let result = await product.addProducts(newProduct)
+    res.status(201).json({ status: "success", payload: result})
 })
 
 //Método PUT
@@ -48,8 +47,8 @@ router.put("/:pid", (req, res) => {
 //Método DELETE
 router.delete("/:pid", async(req, res) => {
     const id = req.params.pid
-    product.deleteProductsById(id)
-    res.status(200).json({ message: "User delete" })
+    let result = await product.deleteProductsById(id)
+    res.status(200).json({ status: "success", payload: result })
 })
 
 

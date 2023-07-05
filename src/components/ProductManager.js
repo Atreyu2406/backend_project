@@ -1,5 +1,6 @@
 import { json } from "express"
-import fs, { read } from "fs"
+import fs, { existsSync, read } from "fs"
+import { nanoid } from "nanoid"
 
 export default class ProductManager {
     #products
@@ -9,59 +10,43 @@ export default class ProductManager {
         this.format = "utf-8"
     }
 
+
     writeProducts = async(product) => {
-        let products = await this.readProducts()
-        let productsAll = [ ...products, product ]
-        await fs.promises.writeFile(this.path, JSON.stringify(productsAll))
-        return "Producto agregado"
+        await fs.promises.writeFile(this.path, JSON.stringify(product, null, 2))
+    }
+    
+    readProducts = async() => {
+        let products = JSON.parse(await fs.promises.readFile(this.path, this.format))
+        return products
     }
 
-    readProducts = async() => {
-        let readProd = JSON.parse(await fs.promises.readFile(this.path, this.format))
-        return readProd
+    addProducts = async(product) => {
+        let products = await this.readProducts()
+        product.id = nanoid()
+        let productsAll = [ ...products, product ]
+        await this.writeProducts(productsAll)
+        return productsAll
     }
 
     getProducts = async() => {
-        let getProd = await this.readProducts()
-        return getProd
+        return await this.readProducts()
     }
 
     getProductsById = async(id) => {
-        let getProdById = await this.readProducts()
-        const product = getProdById.find(item => item.id === id)
-        if (!product) return console.log("Not Found ID")
-        return console.log(product)
+        let products = await this.readProducts()
+        let productById = products.find(item => item.id === id)
+        if (!productById) return ({ message: "Not Found ID" })
+        return productById
     }
-
-    // #generateId = () => (this.#products.length === 0 ? 1 : this.#products[this.#products.length-1].id + 1)
-
-    // #validate = (title, description, price, code, stock, img) => {
-    //     if (!title || !description || !price || !code || !stock || !img) {
-    //         return `[${title}]: Campos Incompletos`
-    //     } else {
-    //         const found = this.#products.find(item => item.code === code)
-    //         if (!found) return true
-    //         return `[${title}]: El código ya existe`
-    //     }
-    // }
-        
-    addProducts = async(title, description, price, code, stock, img) => {
-        // if ((this.#validate(title, description, price, code, stock, img) === true)) {
-            this.#products.push({title, description, price, code, stock, img}) 
-            console.log(this.#products)
-            return await fs.promises.writeFile(this.path, JSON.stringify(this.#products, null, `\t`))
-    }
-    //     } else {
-    //         console.log(this.#validate(title, description, price, code, stock, img))
-    //     }
-    // }
 
     deleteProductsById = async(id) => {
-        let deleteProdById = await this.readProducts()
-        let productDelete = deleteProdById.filter(item => item.id != id)
-        return await fs.promises.writeFile(this.path, JSON.stringify(productDelete, null, `\t`))
-    }
-
+        let products = await this.readProducts()
+        let existsProduct = products.some(prod => prod.id === id)
+        if (!existsProduct) return "[ERR] Product Not Found"
+        let productDelete = products.filter(item => item.id != id)
+        await this.writeProducts(productDelete)
+    }    
+    
     updateProducts = async({ id, ...product}) => {
         await this.deleteProductsById(id);
         let updateDb = await this.readProducts()
@@ -70,8 +55,8 @@ export default class ProductManager {
     }
 }
 
-const product = new ProductManager()
 
+const product = new ProductManager()
 
 
 /*
@@ -84,6 +69,10 @@ product.addProducts("Harry Potter", "Película género fantástico", "12500", "4
 product.addProducts("Indiana Jones", "Película aventura", "9500", "4523", "7", "img2.jpg")
 product.addProducts("Sherlock Holmes", "Película detectives", "8000", "4524", "14", "img3.jpg")
 product.addProducts("The Witcher", "Película género fantástico", "5000", "4525", "4", "img4.jpg")
+
+product.addProducts("Jack Skellington", "The Pumpkin King has brought Halloween to Halloween Town, but now he is ready to herald in the spirit of a merrier holiday. Help Pop! Jack Skellington break down the science of Christmas as he studies the holiday’s joyous traditions in his lab. Celebrate the 30th Anniversary of The Nightmare Before Christmas with Pop! Jack Skellington. He is simply meant to be in your collection! Vinyl figure is approximately 4.4-inches tall.", 12500, "", true, "POP001", 3, "Funko Pop")
+product.addProducts("Master Roshi", "Every Dragon Ball Z collection needs to have Goku’s old instructor, Master Roshi. Collect this Pop! of Master Roshi with his staff to help your Dragon Ball Z collection keep up with their training. Collectible stands 3.75-inches tall.", 10500, "", true, "POP002", 12, "Funko Pop")
+product.addProducts("Chucky", "Schedule a playdate with Bride of Chucky Pop! Chucky. Capture him to haunt your Pop! Movies collection. Vinyl figure is approximately 4-inches tall.", 9800, "", true, "POP003", 23, "Funko Pop")
 
 //Busqueda de productos por ID
 // product.getProductsById(2)
