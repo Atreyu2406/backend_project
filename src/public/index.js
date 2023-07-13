@@ -37,7 +37,7 @@ Swal.fire({
     })
 
     socket.on("alert", () => {
-        alert("Nuevo usuario conectado")
+        alert("Nuevo usuario conectado...")
     })
 })
 

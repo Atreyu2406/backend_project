@@ -3,13 +3,10 @@ import fs, { existsSync, read } from "fs"
 import { nanoid } from "nanoid"
 
 export default class ProductManager {
-    #products
     constructor() {
-        this.#products = []
         this.path = "./products.json"
         this.format = "utf-8"
     }
-
 
     writeProducts = async(product) => {
         await fs.promises.writeFile(this.path, JSON.stringify(product, null, 2))
@@ -20,9 +17,15 @@ export default class ProductManager {
         return products
     }
 
+    exists = async(id) => {
+        let products = await this.readProducts()
+        return products.find(item => item.id === id)
+    }
+
     addProducts = async(product) => {
         let products = await this.readProducts()
-        product.id = nanoid()
+        product.id = nanoid(3)
+        product.status = true
         let productsAll = [ ...products, product ]
         await this.writeProducts(productsAll)
         return productsAll
@@ -47,14 +50,16 @@ export default class ProductManager {
         await this.writeProducts(productDelete)
     }    
     
-    updateProducts = async({ id, ...product}) => {
+    updateProducts = async(id, product) => {
+        let products = await this.readProducts()
+        let existsProduct = products.find(item => item.id === id)
+        if (!existsProduct) return "[ERR] Product Not Found"
         await this.deleteProductsById(id);
-        let updateDb = await this.readProducts()
-        let updateProd = [{id, ...product}, ...updateDb]
-        return await fs.promises.writeFile(this.path, JSON.stringify(updateProd, null, `\t`))
+        let productOld = await this.readProducts()
+        let productUpdate = [{...product, id: id}, ...productOld]
+        await this.writeProducts(productUpdate)
     }
 }
-
 
 const product = new ProductManager()
 

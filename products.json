@@ -1,8 +1,13 @@
 [
   {
-    "name": "Benja",
-    "age": 36,
-    "code": "COD005",
-    "id": "QlAi_-OWsujyZcxAyD045"
+    "title": "Funko Pop Chuky",
+    "description": "What’s this? The Pumpkin King has brought Halloween to Halloween Town, but now he is ready to herald in the spirit of a merrier holiday. Help Pop! Jack Skellington break down the science of Christmas as he studies the holiday’s joyous traditions in his lab. Celebrate the 30th Anniversary of The Nightmare Before Christmas with Pop! Jack Skellington. He is simply meant to be in your collection! Vinyl figure is approximately 4.4-inches tall.",
+    "code": "POP001",
+    "price": 12500,
+    "stock": 7,
+    "category": "Funko Pop",
+    "thumbnails": "https://res.cloudinary.com/dwzuvamqz/image/upload/v1688947209/funko_chuky_nxwc8k.png",
+    "id": "Gsf",
+    "status": true
   }
 ]

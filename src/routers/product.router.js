@@ -1,13 +1,13 @@
 import { Router } from "express";
-import ProductManager from "../components/ProductManager.js"
+import ProductManager from "../dao/fsManagers/ProductManager.js"
 
 const router = Router()
 const product = new ProductManager()
-const readProducts = await product.readProducts()
+const showProducts = await product.getProducts()
 
 //endpoint para leer todos los productos
 router.get("/", async (req, res) => {
-    // res.render("showProducts", {readProducts})
+    // res.render("showProducts", {showProducts})
     res.json(await product.getProducts())
 })
 
@@ -33,23 +33,24 @@ router.get("/:pid", async(req, res) => {
 router.post ("/", async(req, res) => {
     let newProduct = req.body
     let result = await product.addProducts(newProduct)
-    res.status(201).json({ status: "success", payload: result})
+    res.status(201).json({ status: "success", payload: result })
 })
 
 //Método PUT
-router.put("/:pid", (req, res) => {
-    const id = parseInt(req.params.pid)
-    const newData = req.body
-    product.updateProducts({id, ...newData})
-    res.status(200).json({ message: "User update!" })
+router.put("/:pid", async(req, res) => {
+    const id = req.params.pid
+    const newProduct = req.body
+    let result = await product.updateProducts(id, newProduct)
+    if(typeof result == "string") return res.json({ status: "error", payload: result })
+    res.status(200).json({ status: "success", payload: result })
 })
 
 //Método DELETE
 router.delete("/:pid", async(req, res) => {
     const id = req.params.pid
     let result = await product.deleteProductsById(id)
+    if(typeof result == "string") return res.json({ status: "error", payload: result })
     res.status(200).json({ status: "success", payload: result })
 })
-
 
 export default router
